@@ -7,6 +7,8 @@ public class App {
         try(Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/student", "root", "12345678")) {
             acceptConnection(connection);
             insertData(connection);
+            insertData(connection);
+            insertData(connection);
             distinctData(connection);
 
             try (Statement statement = connection.createStatement()) {
@@ -51,20 +53,36 @@ public class App {
                     """);
         }
     }
+
+//    Почему -то  MySQL не работает с многострочной командой с несколькоми командами
+//    пришлось CREATE DROP RENAME по отдельности писать.
     private static void distinctData(Connection connection) throws SQLException {
-        // Создание временной таблицы с уникальными данными из Students
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE `temp_table` AS SELECT DISTINCT * FROM `Students`");
-        }
+        // Включаем управление транзакцией
+        connection.setAutoCommit(false);
 
-        // Удаление оригинальной таблицы Students
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("DROP TABLE `Students`");
-        }
+        try {
+            // Создание временной таблицы с уникальными данными из Students
+            try (PreparedStatement createTemp = connection.prepareStatement("CREATE TABLE `temp_table` AS SELECT DISTINCT * FROM `Students`")) {
+                createTemp.executeUpdate();
+            }
 
-        // Переименование temp_table в Students
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("RENAME TABLE `temp_table` TO `Students`");
+            // Удаление оригинальной таблицы Students
+            try (PreparedStatement dropOriginal = connection.prepareStatement("DROP TABLE `Students`")) {
+                dropOriginal.executeUpdate();
+            }
+
+            // Переименование temp_table в Students
+            try (PreparedStatement renameTable = connection.prepareStatement("RENAME TABLE `temp_table` TO `Students`")) {
+                renameTable.executeUpdate();
+            }
+
+            // Подтверждаем транзакцию
+            connection.commit();
+        } catch (SQLException e) {
+            // В случае ошибки откатываем изменения
+            connection.rollback();
+            throw e; // Перебрасываем исключение дальше
+
         }
     }
 }
