@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <!-- Свойства подключения к базе данных -->
+        <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="connection.url">jdbc:mysql://localhost:3306/student?useSSL=false&amp;serverTimezone=UTC</property>
+        <property name="connection.username">root</property>
+        <property name="connection.password">12345678</property>
+
+        <!-- Настройки диалекта -->
+        <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+
+        <!-- Управление схемой данных -->
+        <property name="hbm2ddl.auto">create</property>
+
+        <!-- Настройки пула соединений -->
+
+        <!-- Конфигурация кэша второго уровня -->
+        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+
+        <!-- Включение логирования -->
+        <property name="show_sql">true</property>
+
+        <!-- Спецификации mapping-файлов -->
+        <mapping class="org.example.hibernate.Student"/>
+        <!-- Например: <mapping resource="com/example/model/Student.hbm.xml"/> -->
+
+    </session-factory>
+</hibernate-configuration>
