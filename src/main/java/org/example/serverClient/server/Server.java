@@ -108,7 +108,6 @@ class ClientHandler implements Runnable {
             System.err.println("Произошла ошибка при взаимодействии с клиентом " + clientSocket + ": " + e.getMessage());
         }
 
-        // FIXME: При отключении клиента нужно удалять его из Map и оповещать остальных
         try {
             clientSocket.close();
         } catch (IOException e) {
